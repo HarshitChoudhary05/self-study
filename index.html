@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Source URL Inspector</title>
+  <title>View Source</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -27,33 +27,42 @@
     button:hover {
       background-color: #45a049;
     }
-    #result {
+    #sourceCode {
       margin-top: 10px;
-      font-weight: bold;
+      border: 1px solid #ccc;
+      padding: 10px;
+      white-space: pre-wrap;
     }
   </style>
 </head>
 <body>
-  <h2>Source URL Inspector</h2>
-  <form id="urlForm">
-    <label for="urlInput">Enter URL:</label>
-    <input type="text" id="urlInput" placeholder="Enter URL here..." required>
-    <button type="button" onclick="inspectSource()">Inspect Source</button>
-  </form>
-  <div id="result"></div>
+  <h2>View Source</h2>
+  <label for="urlInput">Enter URL:</label>
+  <input type="text" id="urlInput" placeholder="Enter URL here...">
+  <button onclick="viewSource()">View Source</button>
+  <div id="sourceCode"></div>
 
   <script>
-    function inspectSource() {
+    function viewSource() {
       var url = document.getElementById('urlInput').value;
+      if (!url) {
+        alert("Please enter a valid URL.");
+        return;
+      }
+
       var xhr = new XMLHttpRequest();
-      xhr.open("POST", "/inspect", true);
-      xhr.setRequestHeader("Content-Type", "application/json");
-      xhr.onreadystatechange = function () {
-        if (xhr.readyState === 4 && xhr.status === 200) {
-          document.getElementById('result').innerHTML = xhr.responseText;
+      xhr.onreadystatechange = function() {
+        if (xhr.readyState === XMLHttpRequest.DONE) {
+          if (xhr.status === 200) {
+            document.getElementById('sourceCode').innerText = xhr.responseText;
+          } else {
+            document.getElementById('sourceCode').innerText = "Error fetching URL. Please try again.";
+          }
         }
       };
-      xhr.send(JSON.stringify({url: url}));
+
+      xhr.open("GET", "/fetch?url=" + encodeURIComponent(url), true);
+      xhr.send();
     }
   </script>
 </body>
