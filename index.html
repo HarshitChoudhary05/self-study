@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Source URL Inspector</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+    }
+    label {
+      font-weight: bold;
+    }
+    input[type="text"] {
+      width: 100%;
+      padding: 8px;
+      margin-top: 5px;
+    }
+    button {
+      padding: 8px 16px;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #45a049;
+    }
+    #result {
+      margin-top: 10px;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <h2>Source URL Inspector</h2>
+  <form id="urlForm">
+    <label for="urlInput">Enter URL:</label>
+    <input type="text" id="urlInput" placeholder="Enter URL here..." required>
+    <button type="button" onclick="inspectSource()">Inspect Source</button>
+  </form>
+  <div id="result"></div>
+
+  <script>
+    function inspectSource() {
+      var url = document.getElementById('urlInput').value;
+      var xhr = new XMLHttpRequest();
+      xhr.open("POST", "/inspect", true);
+      xhr.setRequestHeader("Content-Type", "application/json");
+      xhr.onreadystatechange = function () {
+        if (xhr.readyState === 4 && xhr.status === 200) {
+          document.getElementById('result').innerHTML = xhr.responseText;
+        }
+      };
+      xhr.send(JSON.stringify({url: url}));
+    }
+  </script>
+</body>
+</html>
